@@ -119,12 +119,13 @@ jobs:
           path: config.log
           retention-days: 5
 
-  bionic:
+  older:
     needs: pre-check
     if: ${{ needs.pre-check.outputs.should_skip != 'true' }}
-    runs-on: ubuntu-18.04
+    runs-on: ${{ matrix.os }}
     strategy:
       matrix:
+        os: [ ubuntu-18.04, ubuntu-20.04 ]
         test: [ all ]
         compiler: [ gcc, clang ]
         include:
@@ -133,16 +134,15 @@ jobs:
       LEAK_DETECTIVE: ${{ matrix.leak-detective || 'no' }}
       CC: ${{ matrix.compiler || 'gcc' }}
       TEST: ${{ matrix.test }}
-      UBUNTU_BIONIC: yes
     steps:
       - uses: actions/checkout@v2
       - uses: actions/cache@v2
         with:
           path: ~/.ccache
-          key: ccache-bionic-${{ env.CC }}-${{ matrix.test }}-${{ github.sha }}
+          key: ccache-${{ matrix.os }}-${{ env.CC }}-${{ matrix.test }}-${{ github.sha }}
           restore-keys: |
-            ccache-bionic-${{ env.CC }}-${{ matrix.test }}-
-            ccache-bionic-${{ env.CC }}-
+            ccache-${{ matrix.os }}-${{ env.CC }}-${{ matrix.test }}-
+            ccache-${{ matrix.os }}-${{ env.CC }}-
       - run: |
           sudo apt-get install -qq ccache
           echo "PATH=/usr/lib/ccache:$PATH" >> $GITHUB_ENV

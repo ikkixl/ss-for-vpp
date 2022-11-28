@@ -162,10 +162,10 @@ openssl*)
 gcrypt)
 	CONFIG="--disable-defaults --enable-pki --enable-gcrypt --enable-random --enable-pem --enable-pkcs1 --enable-pkcs8 --enable-gcm --enable-hmac --enable-kdf -enable-curve25519 --enable-x509 --enable-constraints"
 	export TESTS_PLUGINS="test-vectors gcrypt! random pem pkcs1 pkcs8 gcm hmac kdf curve25519 x509 constraints"
-	if [ "$ID" = "ubuntu" -a "$VERSION_ID" = "20.04" ]; then
-		DEPS="libgcrypt20-dev"
-	else
+	if [ "$ID" = "ubuntu" -a "$VERSION_ID" = "18.04" ]; then
 		DEPS="libgcrypt11-dev"
+	else
+		DEPS="libgcrypt20-dev"
 	fi
 	;;
 botan)
@@ -217,10 +217,10 @@ all|coverage|sonarcloud)
 		  libldap2-dev libpcsclite-dev libpam0g-dev binutils-dev libnm-dev
 		  libgcrypt20-dev libjson-c-dev python3-pip libtspi-dev libsystemd-dev
 		  libselinux1-dev"
-	if [ "$ID" = "ubuntu" -a "$VERSION_ID" = "20.04" ]; then
-		DEPS="$DEPS libiptc-dev"
-	else
+	if [ "$ID" = "ubuntu" -a "$VERSION_ID" = "18.04" ]; then
 		DEPS="$DEPS iptables-dev python3-setuptools"
+	else
+		DEPS="$DEPS libiptc-dev"
 	fi
 	PYDEPS="tox"
 	if test "$1" = "build-deps"; then
