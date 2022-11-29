@@ -157,6 +157,21 @@ openssl*)
 	if test "$TEST" = "openssl-3"; then
 		DEPS=""
 		use_custom_openssl $1
+	elif [ "$ID" = "ubuntu" -a "$VERSION_ID" = "22.04" ]; then
+		# Ubuntu 22.04 ships with OpenSSL 3, we require debug symbols to
+		# whitelist leaks
+		if test "$1" = "deps"; then
+			echo "deb http://ddebs.ubuntu.com $(lsb_release -cs) main restricted
+				deb http://ddebs.ubuntu.com $(lsb_release -cs)-updates main restricted
+				deb http://ddebs.ubuntu.com $(lsb_release -cs)-proposed main restricted" | \
+				sudo tee -a /etc/apt/sources.list.d/ddebs.list
+			sudo apt-get install -qq ubuntu-dbgsym-keyring
+			DEPS="$DEPS libssl3-dbgsym binutils-dev"
+		fi
+		CONFIG="$CONFIG --enable-bfd-backtraces"
+		# with ASan we have to use the (extremely) slow stack unwind as the
+		# shipped version of the library is built without -fno-omit-frame-pointer
+		export ASAN_OPTIONS=fast_unwind_on_malloc=0
 	fi
 	;;
 gcrypt)
